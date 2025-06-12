@@ -26,6 +26,32 @@ const cidr = z
   .refine((value) => isCidr(value), { message: t('zod.interface.cidrValid') })
   .pipe(safeStringRefine);
 
+// AmneziaWG validation schemas
+const amneziaJc = z
+  .number({ message: t('zod.interface.amneziaJc') })
+  .min(1, { message: t('zod.interface.amneziaJcMin') })
+  .max(255, { message: t('zod.interface.amneziaJcMax') });
+
+const amneziaJmin = z
+  .number({ message: t('zod.interface.amneziaJmin') })
+  .min(1, { message: t('zod.interface.amneziaJminMin') })
+  .max(65535, { message: t('zod.interface.amneziaJminMax') });
+
+const amneziaJmax = z
+  .number({ message: t('zod.interface.amneziaJmax') })
+  .min(1, { message: t('zod.interface.amneziaJmaxMin') })
+  .max(65535, { message: t('zod.interface.amneziaJmaxMax') });
+
+const amneziaS = z
+  .number({ message: t('zod.interface.amneziaS') })
+  .min(1, { message: t('zod.interface.amneziaSMin') })
+  .max(65535, { message: t('zod.interface.amneziaSMax') });
+
+const amneziaH = z
+  .number({ message: t('zod.interface.amneziaH') })
+  .min(1, { message: t('zod.interface.amneziaHMin') })
+  .max(2147483647, { message: t('zod.interface.amneziaHMax') });
+
 export const InterfaceUpdateSchema = schemaForType<InterfaceUpdateType>()(
   z.object({
     ipv4Cidr: cidr,
@@ -34,6 +60,15 @@ export const InterfaceUpdateSchema = schemaForType<InterfaceUpdateType>()(
     port: PortSchema,
     device: device,
     enabled: EnabledSchema,
+    jc: amneziaJc,
+    jmin: amneziaJmin,
+    jmax: amneziaJmax,
+    s1: amneziaS,
+    s2: amneziaS,
+    h1: amneziaH,
+    h2: amneziaH,
+    h3: amneziaH,
+    h4: amneziaH,
   })
 );
 

@@ -14,12 +14,25 @@ RUN pnpm install
 COPY src ./
 RUN pnpm build
 
+# build amneziawg-go
+FROM amneziavpn/amneziawg-go:latest AS awg_stage
+
 # Copy build result to a new image.
 # This saves a lot of disk space.
 FROM docker.io/library/node:lts-alpine
 WORKDIR /app
 
 HEALTHCHECK --interval=1m --timeout=5s --retries=3 CMD /usr/bin/timeout 5s /bin/sh -c "/usr/bin/wg show | /bin/grep -q interface || exit 1"
+
+# Копируем бинарники из этого образа (AWG stage)
+COPY --from=awg_stage /usr/bin/awg /usr/bin/awg
+COPY --from=awg_stage /usr/bin/awg /usr/bin/awg
+COPY --from=awg_stage /usr/bin/awg-quick /usr/bin/awg-quick
+COPY --from=awg_stage /usr/bin/amneziawg-go /usr/bin/amneziawg-go
+
+# (Если нужно) создать ссылки
+RUN ln -s /usr/bin/awg /usr/bin/wg && \
+    ln -s /usr/bin/awg-quick /usr/bin/wg-quick
 
 # Copy build
 COPY --from=build /app/.output /app
@@ -35,14 +48,14 @@ RUN chmod +x /usr/local/bin/cli
 
 # Install Linux packages
 RUN apk add --no-cache \
+    bash \
     dpkg \
     dumb-init \
     iptables \
     ip6tables \
     nftables \
     kmod \
-    iptables-legacy \
-    wireguard-tools
+    iptables-legacy
 
 # Use iptables-legacy
 RUN update-alternatives --install /usr/sbin/iptables iptables /usr/sbin/iptables-legacy 10 --slave /usr/sbin/iptables-restore iptables-restore /usr/sbin/iptables-legacy-restore --slave /usr/sbin/iptables-save iptables-save /usr/sbin/iptables-legacy-save

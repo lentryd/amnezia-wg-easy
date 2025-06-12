@@ -15,6 +15,16 @@ export const wgInterface = sqliteTable('interfaces_table', {
   mtu: int().notNull(),
   // does nothing yet
   enabled: int({ mode: 'boolean' }).notNull(),
+  // AmneziaWG settings
+  jc: int().notNull().default(5), // Junk packet count
+  jmin: int().notNull().default(50), // Junk packet minimum size
+  jmax: int().notNull().default(1000), // Junk packet maximum size
+  s1: int().notNull().default(75), // Init packet junk size
+  s2: int().notNull().default(75), // Response packet junk size
+  h1: int().notNull().default(1234567891), // Init packet magic header
+  h2: int().notNull().default(1234567892), // Response packet magic header
+  h3: int().notNull().default(1234567893), // Underload packet magic header
+  h4: int().notNull().default(1234567894), // Transport packet magic header
   createdAt: text('created_at')
     .notNull()
     .default(sql`(CURRENT_TIMESTAMP)`),
